@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="รางเงิน">
+<meta name="theme-color" content="#E7EBE4">
+<title>รางเงิน</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Thai+Looped:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#E7EBE4;
+  --card:#F5F7F2;
+  --card-2:#EEF1EA;
+  --ink:#16241F;
+  --ink-2:#4C5D56;
+  --ink-3:#8B9A92;
+  --line:#CBD4C9;
+  --line-2:#DDE3D9;
+  --stamp:#A6322B;
+  --teal:#1D6B5F;
+  --gold:#A8811F;
+  --w1:#3E7A57;
+  --w2:#3A6A96;
+  --w3:#A6322B;
+  --w4:#6E5794;
+  --w5:#7A6A55;
+  --r:14px;
+  --safe-b:env(safe-area-inset-bottom,0px);
+  --safe-t:env(safe-area-inset-top,0px);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:'IBM Plex Sans Thai Looped','Sukhumvit Set','Thonburi',system-ui,sans-serif;
+  font-size:16px;line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  overscroll-behavior-y:none;
+}
+button,input,select{font-family:inherit;font-size:16px;color:inherit}
+button{border:none;background:none;cursor:pointer;padding:0}
+.num{font-family:'IBM Plex Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.dis{font-family:'Bai Jamjuree','Sukhumvit Set',sans-serif}
+
+/* ---------- shell ---------- */
+#app{max-width:520px;margin:0 auto;padding-top:var(--safe-t);min-height:100vh}
+.masthead{
+  padding:14px 18px 10px;display:flex;align-items:baseline;justify-content:space-between;
+  border-bottom:1px solid var(--line);
+}
+.masthead h1{
+  margin:0;font-family:'Bai Jamjuree',sans-serif;font-weight:700;font-size:19px;letter-spacing:.01em;
+}
+.masthead .cyc{font-size:12px;color:var(--ink-2);letter-spacing:.06em;text-transform:uppercase}
+main{padding:16px 16px 108px;display:none}
+main.on{display:block}
+.hide{display:none !important}
+
+/* ---------- runway (signature) ---------- */
+.runway-wrap{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  padding:16px 16px 12px;position:relative;overflow:hidden;
+}
+.runway-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px}
+.eyebrow{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-weight:600}
+.runway{
+  position:relative;height:92px;padding-right:70px;
+  background:repeating-linear-gradient(to bottom,transparent 0,transparent 22px,var(--line-2) 22px,var(--line-2) 23px);
+}
+.runway-days{display:flex;align-items:flex-end;height:100%;gap:2px}
+.rday{flex:1;height:100%;position:relative;min-width:4px}
+.rday>i{
+  position:absolute;left:0;right:0;bottom:0;display:block;border-radius:2px 2px 0 0;
+  background:var(--teal);height:calc(var(--h,0) * 100%);transition:height .35s ease;
+}
+.rday.over>i{background:var(--stamp)}
+.rday.future>i{background:var(--line);height:3px !important;border-radius:2px}
+.rday.wkstart{border-left:1px dashed var(--line);margin-left:2px}
+.rday.today:after{
+  content:"";position:absolute;left:50%;transform:translateX(-50%);top:-7px;
+  border-left:4px solid transparent;border-right:4px solid transparent;border-top:6px solid var(--ink);
+}
+.rday.today>i{box-shadow:0 0 0 1.5px var(--ink)}
+.runway-axis{display:flex;justify-content:space-between;margin-top:8px;padding-right:70px;font-size:11px;color:var(--ink-3)}
+.stamp{
+  position:absolute;right:6px;top:12px;width:62px;height:62px;border-radius:50%;
+  border:2px solid var(--stamp);color:var(--stamp);opacity:.62;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  transform:rotate(-8deg);
+}
+.stamp:before{content:"";position:absolute;inset:3px;border:1px solid var(--stamp);border-radius:50%;opacity:.55}
+.stamp .d{font-family:'Bai Jamjuree',sans-serif;font-weight:700;font-size:20px;line-height:1}
+.stamp .m{font-size:11px;line-height:1.2;font-weight:600}
+.stamp .l{font-size:8px;letter-spacing:.08em;margin-top:1px}
+.stamp.live{opacity:1}
+
+/* ---------- today line ---------- */
+.today-line{
+  margin-top:14px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  padding:14px 16px;
+}
+.today-line .big{display:flex;align-items:baseline;gap:8px}
+.today-line .big b{font-family:'Bai Jamjuree',sans-serif;font-size:38px;font-weight:700;line-height:1;letter-spacing:-.01em}
+.today-line .big span{font-size:13px;color:var(--ink-2)}
+.today-line .sub{margin-top:8px;font-size:13px;color:var(--ink-2)}
+.today-line.neg .big b{color:var(--stamp)}
+.bar{height:6px;background:var(--card-2);border-radius:3px;overflow:hidden;margin-top:10px;border:1px solid var(--line-2)}
+.bar>span{display:block;height:100%;background:var(--teal);transition:width .35s ease}
+.bar.over>span{background:var(--stamp)}
+
+/* ---------- sections ---------- */
+.sec{margin-top:22px}
+.sec-h{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+.sec-h .eyebrow{color:var(--ink-2)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px}
+.card+.card{margin-top:10px}
+
+/* week envelopes */
+.wk{display:flex;align-items:center;gap:12px;padding:11px 14px;background:var(--card);border:1px solid var(--line);border-radius:12px}
+.wk+.wk{margin-top:8px}
+.wk .tag{
+  width:30px;height:30px;flex:none;border-radius:8px;display:flex;align-items:center;justify-content:center;
+  font-family:'Bai Jamjuree',sans-serif;font-weight:700;font-size:14px;color:#fff;
+}
+.wk .mid{flex:1;min-width:0}
+.wk .mid .t{font-size:14px;font-weight:600}
+.wk .mid .d{font-size:11.5px;color:var(--ink-3)}
+.wk .amt{text-align:right;flex:none}
+.wk .amt b{font-family:'IBM Plex Mono',monospace;font-size:15px;font-weight:600}
+.wk .amt small{display:block;font-size:11px;color:var(--ink-3)}
+.wk.cur{border-color:var(--ink);box-shadow:0 1px 0 var(--ink)}
+.wk.done{opacity:.66}
+.wk .amt b.neg{color:var(--stamp)}
+.wkline{height:3px;background:var(--line-2);border-radius:2px;margin-top:5px;overflow:hidden}
+.wkline>span{display:block;height:100%}
+
+/* pots */
+.pot{display:flex;align-items:center;gap:12px}
+.pot .ico{width:34px;height:34px;flex:none;border-radius:9px;background:var(--card-2);display:flex;align-items:center;justify-content:center;border:1px solid var(--line-2)}
+.pot .ico svg{width:18px;height:18px}
+.pot .nm{flex:1}
+.pot .nm b{font-size:14.5px;font-weight:600;display:block}
+.pot .nm small{font-size:11.5px;color:var(--ink-3)}
+.pot .v{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:17px}
+.pot-actions{display:flex;gap:8px;margin-top:12px}
+
+/* buttons */
+.btn{
+  display:block;width:100%;padding:15px;border-radius:12px;background:var(--ink);color:var(--card);
+  font-weight:600;font-size:16px;text-align:center;font-family:'Bai Jamjuree',sans-serif;letter-spacing:.01em;
+}
+.btn:active{opacity:.82}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);}
+.btn.sm{padding:10px 14px;font-size:14px;width:auto;flex:1}
+.btn.danger{background:var(--stamp);color:#fff}
+.btn.armed{background:var(--stamp);color:#fff}
+.btn[disabled]{opacity:.4}
+.fab-row{margin-top:16px}
+
+/* forms */
+label.f{display:block;margin-top:14px}
+label.f span{display:block;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);font-weight:600;margin-bottom:6px}
+input[type=text],input[type=number],input[type=date],select{
+  width:100%;padding:13px 14px;border:1px solid var(--line);border-radius:11px;background:var(--card);
+  font-size:16px;appearance:none;
+}
+input:focus,select:focus{outline:2px solid var(--teal);outline-offset:-1px}
+.hint{font-size:12px;color:var(--ink-3);margin-top:6px;line-height:1.45}
+.chips{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}
+.chip{
+  padding:8px 13px;border:1px solid var(--line);border-radius:999px;font-size:14px;background:var(--card);
+  font-family:'IBM Plex Mono',monospace;
+}
+.chip.on{background:var(--ink);color:var(--card);border-color:var(--ink)}
+.catgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+.cat{
+  display:flex;flex-direction:column;align-items:center;gap:5px;padding:11px 4px;border:1px solid var(--line);
+  border-radius:11px;background:var(--card);font-size:12.5px;
+}
+.cat svg{width:20px;height:20px}
+.cat.on{background:var(--ink);color:var(--card);border-color:var(--ink)}
+.switch{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0}
+.switch b{font-weight:600;font-size:14.5px;display:block}
+.switch small{font-size:11.5px;color:var(--ink-3)}
+.tog{width:50px;height:30px;border-radius:15px;background:var(--line);position:relative;flex:none;transition:background .2s}
+.tog:after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:transform .2s}
+.tog.on{background:var(--teal)}
+.tog.on:after{transform:translateX(20px)}
+
+/* ledger */
+.dayhdr{display:flex;justify-content:space-between;align-items:baseline;margin:18px 0 7px}
+.dayhdr b{font-size:13px;font-weight:600}
+.dayhdr small{font-size:12px;color:var(--ink-3);font-family:'IBM Plex Mono',monospace}
+.row{display:flex;align-items:center;gap:11px;padding:11px 14px;background:var(--card);border:1px solid var(--line);border-radius:11px}
+.row+.row{margin-top:6px}
+.row .ico{width:26px;height:26px;flex:none;display:flex;align-items:center;justify-content:center;color:var(--ink-2)}
+.row .ico svg{width:17px;height:17px}
+.row .tx{flex:1;min-width:0}
+.row .tx b{font-size:14px;font-weight:500;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .tx small{font-size:11px;color:var(--ink-3)}
+.row .v{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:15px}
+.row .del{width:30px;height:30px;flex:none;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--ink-3);border:1px solid transparent}
+.row .del.armed{color:#fff;background:var(--stamp);border-color:var(--stamp)}
+.row .del svg{width:15px;height:15px}
+.row.income .v{color:var(--w1)}
+.empty{text-align:center;padding:34px 20px;color:var(--ink-3);font-size:14px;line-height:1.6}
+
+/* payday schedule */
+.pd{display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid var(--line-2)}
+.pd:last-child{border-bottom:none}
+.pd .n{width:22px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-3)}
+.pd .m{flex:1;font-size:14px}
+.pd .dt{font-family:'IBM Plex Mono',monospace;font-size:13.5px;font-weight:500}
+.pd.past{opacity:.4}
+.pd.next{background:var(--card-2);border-radius:9px;font-weight:600}
+.pd.next .dt{color:var(--stamp)}
+
+/* split preview */
+.split{display:flex;gap:8px;margin-top:12px}
+.split>div{flex:1;background:var(--card-2);border:1px solid var(--line-2);border-radius:11px;padding:10px 8px;text-align:center}
+.split b{display:block;font-family:'IBM Plex Mono',monospace;font-size:16px;font-weight:600}
+.split small{font-size:10.5px;color:var(--ink-3);letter-spacing:.02em}
+
+/* notice */
+.notice{
+  background:var(--ink);color:var(--card);border-radius:var(--r);padding:14px 16px;margin-bottom:14px;
+}
+.notice b{display:block;font-size:14.5px;margin-bottom:3px;font-family:'Bai Jamjuree',sans-serif}
+.notice p{margin:0;font-size:13px;opacity:.86;line-height:1.5}
+.notice .btn{margin-top:12px;background:var(--card);color:var(--ink)}
+.notice.warm{background:var(--stamp)}
+
+/* sheet */
+.scrim{position:fixed;inset:0;background:rgba(22,36,31,.45);opacity:0;pointer-events:none;transition:opacity .22s;z-index:40}
+.scrim.on{opacity:1;pointer-events:auto}
+.sheet{
+  position:fixed;left:0;right:0;bottom:0;z-index:50;background:var(--paper);
+  border-radius:20px 20px 0 0;padding:8px 18px calc(20px + var(--safe-b));
+  transform:translateY(110%);transition:transform .28s cubic-bezier(.32,.72,0,1);
+  max-width:520px;margin:0 auto;max-height:92vh;overflow-y:auto;
+  box-shadow:0 -8px 40px rgba(22,36,31,.16);
+}
+.sheet.on{transform:translateY(0)}
+.grab{width:38px;height:4px;background:var(--line);border-radius:2px;margin:6px auto 12px}
+.sheet h2{font-family:'Bai Jamjuree',sans-serif;font-size:19px;margin:0 0 2px}
+.sheet .sh-sub{font-size:12.5px;color:var(--ink-3);margin-bottom:6px}
+
+/* tabbar */
+.tabbar{
+  position:fixed;left:0;right:0;bottom:0;z-index:30;max-width:520px;margin:0 auto;
+  background:rgba(231,235,228,.94);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border-top:1px solid var(--line);display:flex;padding-bottom:var(--safe-b);
+}
+.tabbar button{flex:1;padding:9px 0 8px;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--ink-3)}
+.tabbar button svg{width:21px;height:21px}
+.tabbar button span{font-size:10.5px;letter-spacing:.02em}
+.tabbar button.on{color:var(--ink)}
+.tabbar button.on span{font-weight:600}
+@media (prefers-reduced-motion:reduce){*{transition:none !important}}
+</style>
+</head>
+<body>
+
+<svg style="display:none">
+  <symbol id="i-food" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 3v7a2 2 0 0 0 2 2h0a2 2 0 0 0 2-2V3"/><path d="M6 12v9"/><path d="M17 3c-1.7 1-2.5 3-2.5 5.5S15.3 13 17 13v8"/></symbol>
+  <symbol id="i-move" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15h16"/><path d="M6 15V9l2-4h8l2 4v6"/><circle cx="8" cy="18" r="1.6"/><circle cx="16" cy="18" r="1.6"/></symbol>
+  <symbol id="i-bag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14l-1 12H6L5 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></symbol>
+  <symbol id="i-social" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M16 6.5a3 3 0 0 1 0 5.5"/><path d="M18 20a6 6 0 0 0-3-5.2"/></symbol>
+  <symbol id="i-health" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6v12M6 12h12"/><rect x="3" y="3" width="18" height="18" rx="4"/></symbol>
+  <symbol id="i-other" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.4-2.9 8.2-7 9-4.1-.8-7-4.6-7-9V6l7-3z"/></symbol>
+  <symbol id="i-buffer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v10H3z"/><path d="M3 11h18M8 7v10"/></symbol>
+  <symbol id="i-fun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4l2.2 4.8 5.3.6-4 3.6 1.1 5.2L12 15.6 7.4 18.2l1.1-5.2-4-3.6 5.3-.6z"/></symbol>
+  <symbol id="i-save" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h11a5 5 0 0 1 0 10H8a4 4 0 0 1-4-4V8z"/><path d="M8 8V6.5A2.5 2.5 0 0 1 10.5 4h3"/><circle cx="16" cy="12" r="1"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-6 8 6v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 7h12M8 12h12M8 17h12M4 7h.01M4 12h.01M4 17h.01"/></symbol>
+  <symbol id="i-pots" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10h18"/><path d="M7 3h10"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></symbol>
+</svg>
+
+<div id="app">
+  <header class="masthead">
+    <h1>รางเงิน</h1>
+    <div class="cyc" id="cycLabel">—</div>
+  </header>
+
+  <!-- ============ HOME ============ -->
+  <main id="v-home" class="on">
+    <div id="homeBody"></div>
+  </main>
+
+  <!-- ============ LEDGER ============ -->
+  <main id="v-log">
+    <div class="sec-h"><div class="eyebrow">รายการในงวดนี้</div><div class="eyebrow" id="logTotal"></div></div>
+    <div id="logBody"></div>
+  </main>
+
+  <!-- ============ POTS ============ -->
+  <main id="v-pots">
+    <div id="potsBody"></div>
+  </main>
+
+  <!-- ============ CYCLE / SETTINGS ============ -->
+  <main id="v-cycle">
+    <div id="cycleBody"></div>
+  </main>
+
+  <nav class="tabbar">
+    <button data-tab="home" class="on"><svg><use href="#i-home"/></svg><span>หน้าหลัก</span></button>
+    <button data-tab="log"><svg><use href="#i-list"/></svg><span>รายการ</span></button>
+    <button data-tab="pots"><svg><use href="#i-pots"/></svg><span>กระเป๋าเงิน</span></button>
+    <button data-tab="cycle"><svg><use href="#i-cal"/></svg><span>งวด</span></button>
+  </nav>
+</div>
+
+<div class="scrim" id="scrim"></div>
+
+<!-- expense sheet -->
+<div class="sheet" id="sh-exp">
+  <div class="grab"></div>
+  <h2>บันทึกรายจ่าย</h2>
+  <div class="sh-sub" id="expSub"></div>
+  <label class="f"><span>จำนวนเงิน</span>
+    <input type="number" inputmode="decimal" id="expAmt" placeholder="0" step="1">
+  </label>
+  <div class="chips" id="expChips"></div>
+  <label class="f"><span>หมวด</span></label>
+  <div class="catgrid" id="expCats"></div>
+  <label class="f"><span>บันทึกช่วยจำ (ไม่บังคับ)</span>
+    <input type="text" id="expNote" placeholder="เช่น ข้าวเที่ยง">
+  </label>
+  <label class="f"><span>วันที่</span><input type="date" id="expDate"></label>
+  <div class="switch" id="expFunWrap">
+    <div><b>จ่ายจากเงินใช้ส่วนตัว</b><small id="expFunBal"></small></div>
+    <div class="tog" id="expFun"></div>
+  </div>
+  <div class="fab-row"><button class="btn" id="expSave">บันทึกรายจ่าย</button></div>
+  <div class="fab-row"><button class="btn ghost" data-close>ยกเลิก</button></div>
+</div>
+
+<!-- extra income sheet -->
+<div class="sheet" id="sh-inc">
+  <div class="grab"></div>
+  <h2>รายได้พิเศษ</h2>
+  <div class="sh-sub">แบ่งอัตโนมัติทันทีที่บันทึก ไม่ปนกับงบรายสัปดาห์</div>
+  <label class="f"><span>จำนวนเงิน</span>
+    <input type="number" inputmode="decimal" id="incAmt" placeholder="0" step="1">
+  </label>
+  <div class="split" id="incSplit"></div>
+  <label class="f"><span>มาจากไหน</span>
+    <input type="text" id="incNote" placeholder="เช่น ค่าสอนพิเศษ">
+  </label>
+  <label class="f"><span>วันที่</span><input type="date" id="incDate"></label>
+  <div class="fab-row"><button class="btn" id="incSave">บันทึกรายได้</button></div>
+  <div class="fab-row"><button class="btn ghost" data-close>ยกเลิก</button></div>
+</div>
+
+<!-- pot move sheet -->
+<div class="sheet" id="sh-pot">
+  <div class="grab"></div>
+  <h2 id="potTitle">—</h2>
+  <div class="sh-sub" id="potSub"></div>
+  <label class="f"><span>จำนวนเงิน</span>
+    <input type="number" inputmode="decimal" id="potAmt" placeholder="0" step="1">
+  </label>
+  <label class="f"><span>เหตุผล</span><input type="text" id="potNote" placeholder=""></label>
+  <div class="fab-row"><button class="btn" id="potSave">ยืนยัน</button></div>
+  <div class="fab-row"><button class="btn ghost" data-close>ยกเลิก</button></div>
+</div>
+
+<!-- new cycle sheet -->
+<div class="sheet" id="sh-cyc">
+  <div class="grab"></div>
+  <h2>ตั้งงวดใหม่</h2>
+  <div class="sh-sub" id="cycSub"></div>
+  <label class="f"><span>เงินที่มีอยู่ตอนนี้ (หลังหักรายจ่ายประจำแล้ว)</span>
+    <input type="number" inputmode="decimal" id="ncAmt" placeholder="0" step="1">
+  </label>
+  <label class="f"><span>กันเป็นสำรองฉุกเฉิน</span>
+    <input type="number" inputmode="decimal" id="ncRes" placeholder="0" step="1">
+  </label>
+  <div class="hint" id="ncHint"></div>
+  <label class="f"><span>เริ่มนับจากวันที่</span><input type="date" id="ncStart"></label>
+  <div class="fab-row"><button class="btn" id="ncSave">เริ่มงวด</button></div>
+  <div class="fab-row"><button class="btn ghost" data-close>ยกเลิก</button></div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ---------------- payday schedule (ปีการศึกษา 2569) ---------------- */
+var PAYDAYS = [
+  ["2026-07-29","กรกฎาคม 2569"],
+  ["2026-08-26","สิงหาคม 2569"],
+  ["2026-09-28","กันยายน 2569"],
+  ["2026-10-28","ตุลาคม 2569"],
+  ["2026-11-26","พฤศจิกายน 2569"],
+  ["2026-12-28","ธันวาคม 2569"],
+  ["2027-01-27","มกราคม 2570"],
+  ["2027-02-24","กุมภาพันธ์ 2570"],
+  ["2027-03-29","มีนาคม 2570"],
+  ["2027-04-28","เมษายน 2570"]
+];
+
+var CATS = [
+  {id:"food",  name:"กิน",      icon:"i-food"},
+  {id:"move",  name:"เดินทาง",  icon:"i-move"},
+  {id:"stuff", name:"ของใช้",   icon:"i-bag"},
+  {id:"social",name:"สังคม",    icon:"i-social"},
+  {id:"health",name:"สุขภาพ",   icon:"i-health"},
+  {id:"other", name:"อื่นๆ",    icon:"i-other"}
+];
+var WK_COLORS = ["var(--w1)","var(--w2)","var(--w3)","var(--w4)","var(--w5)"];
+var TH_MON = ["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
+var TH_DOW = ["อาทิตย์","จันทร์","อังคาร","พุธ","พฤหัสบดี","ศุกร์","เสาร์"];
+
+/* ---------------- date helpers (local, no UTC drift) ---------------- */
+function d2iso(d){
+  var p=function(n){return (n<10?"0":"")+n;};
+  return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate());
+}
+function iso2d(s){var a=s.split("-");return new Date(+a[0],+a[1]-1,+a[2]);}
+function today(){return d2iso(new Date());}
+function addDays(iso,n){var d=iso2d(iso);d.setDate(d.getDate()+n);return d2iso(d);}
+function diffDays(a,b){return Math.round((iso2d(b)-iso2d(a))/86400000);}
+function rangeDays(a,b){var out=[],c=a;var guard=0;while(diffDays(c,b)>=0&&guard++<400){out.push(c);c=addDays(c,1);}return out;}
+function thDate(iso,withYear){
+  var d=iso2d(iso);
+  return d.getDate()+" "+TH_MON[d.getMonth()]+(withYear?" "+String(d.getFullYear()+543).slice(-2):"");
+}
+function thDow(iso){return TH_DOW[iso2d(iso).getDay()];}
+function fmt(n){
+  n=Math.round(n);
+  return n.toLocaleString("en-US");
+}
+
+/* ---------------- storage ---------------- */
+var KEY="nine-money-v1";
+var mem=null;
+function load(){
+  try{
+    var raw=localStorage.getItem(KEY);
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return null;
+}
+function save(){
+  try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){mem=JSON.stringify(S);}
+}
+var S = load() || {
+  cycle:null,
+  pots:{reserve:0,buffer:0,fun:0,savings:0},
+  moves:[],
+  settings:{weekendWeight:true, split:{savings:50,buffer:30,fun:20}}
+};
+if(!S.settings) S.settings={weekendWeight:true,split:{savings:50,buffer:30,fun:20}};
+if(!S.settings.split) S.settings.split={savings:50,buffer:30,fun:20};
+if(!S.moves) S.moves=[];
+if(!S.pots) S.pots={reserve:0,buffer:0,fun:0,savings:0};
+
+/* ---------------- cycle math ---------------- */
+function nextPaydayFrom(iso){
+  for(var i=0;i<PAYDAYS.length;i++){ if(diffDays(iso,PAYDAYS[i][0])>0) return PAYDAYS[i]; }
+  return null;
+}
+function paydayLabel(iso){
+  for(var i=0;i<PAYDAYS.length;i++){ if(PAYDAYS[i][0]===iso) return PAYDAYS[i][1]; }
+  return "";
+}
+function wOf(iso){
+  if(!S.settings.weekendWeight) return 1;
+  var g=iso2d(iso).getDay();
+  return (g===5||g===6||g===0)?1.5:1;
+}
+function spendable(){ return S.cycle ? (S.cycle.amount - S.cycle.reserve) : 0; }
+
+function weeks(){
+  if(!S.cycle) return [];
+  var days=rangeDays(S.cycle.start,S.cycle.end);
+  var sp=spendable(), chunks=[], i;
+  for(i=0;i<days.length;i+=7) chunks.push(days.slice(i,i+7));
+  var used=0,out=[];
+  chunks.forEach(function(cd,idx){
+    var alloc = (idx===chunks.length-1) ? (sp-used) : Math.floor(sp*cd.length/days.length);
+    used+=alloc;
+    out.push({i:idx,days:cd,start:cd[0],end:cd[cd.length-1],alloc:alloc});
+  });
+  return out;
+}
+function spentBetween(a,b,includeFun){
+  if(!S.cycle) return 0;
+  return S.cycle.txns.filter(function(t){
+    return t.date>=a && t.date<=b && (includeFun ? true : !t.fun);
+  }).reduce(function(s,t){return s+t.amount;},0);
+}
+function injBetween(a,b){
+  if(!S.cycle||!S.cycle.injections) return 0;
+  return S.cycle.injections.filter(function(x){return x.date>=a&&x.date<=b;})
+    .reduce(function(s,x){return s+x.amount;},0);
+}
+function weekState(){
+  var t=today(), carry=0;
+  return weeks().map(function(w){
+    var spent=spentBetween(w.start,w.end,false);
+    var inj=injBetween(w.start,w.end);
+    var isPast = t>w.end, isCur = (t>=w.start && t<=w.end);
+    var carryIn=carry;
+    var bal=w.alloc+carryIn+inj-spent;
+    if(isPast) carry=bal; else carry=0;
+    w.spent=spent;w.inj=inj;w.carryIn=carryIn;w.bal=bal;w.isPast=isPast;w.isCur=isCur;
+    return w;
+  });
+}
+function curWeek(){ var f=weekState().filter(function(w){return w.isCur;}); return f[0]||null; }
+
+function todayBudget(){
+  var w=curWeek(); if(!w) return null;
+  var t=today();
+  var spentBefore = spentBetween(w.start, addDays(t,-1), false);
+  var avail = w.alloc + w.carryIn + w.inj - spentBefore;
+  var remain = w.days.filter(function(d){return d>=t;});
+  var sumW = remain.reduce(function(s,d){return s+wOf(d);},0);
+  var allow = sumW>0 ? avail*wOf(t)/sumW : avail;
+  var spentToday = spentBetween(t,t,false);
+  return {allow:allow, spentToday:spentToday, left:allow-spentToday, week:w, avail:avail};
+}
+function dayBaseline(iso){
+  var ws=weeks(),i;
+  for(i=0;i<ws.length;i++){
+    if(iso>=ws[i].start&&iso<=ws[i].end){
+      var sw=ws[i].days.reduce(function(s,d){return s+wOf(d);},0);
+      return sw>0? ws[i].alloc*wOf(iso)/sw : 0;
+    }
+  }
+  return 0;
+}
+function cycleSpent(){ return S.cycle ? spentBetween(S.cycle.start,S.cycle.end,false) : 0; }
+function cycleLeft(){ return spendable() + injBetween(S.cycle.start,S.cycle.end) - cycleSpent(); }
+function cycleOver(){ return S.cycle ? today()>S.cycle.end : false; }
+
+/* ---------------- rendering ---------------- */
+var el=function(id){return document.getElementById(id);};
+function ico(name,cls){return '<svg class="'+(cls||"")+'"><use href="#'+name+'"/></svg>';}
+
+function renderHome(){
+  var b=el("homeBody");
+  if(!S.cycle){
+    var np=nextPaydayFrom(today());
+    b.innerHTML =
+      '<div class="notice"><b>ยังไม่ได้ตั้งงวด</b><p>ใส่ยอดเงินที่เหลืออยู่ตอนนี้ แล้วแอปจะแบ่งเป็นซองรายสัปดาห์ให้พอดีถึงวันเงินเดือนออก'
+      + (np? " ("+thDate(np[0],true)+")" : "") + '</p><button class="btn" data-act="newcycle">ตั้งงวด</button></div>';
+    return;
+  }
+  var html="";
+  if(cycleOver()){
+    html += '<div class="notice warm"><b>งวดนี้จบแล้ว</b><p>เงินเดือนงวดถัดไปเข้าวันที่ '+thDate(S.cycle.payday,true)+' ปิดงวดเพื่อโยนยอดเหลือเข้าเงินเก็บ แล้วเริ่มงวดใหม่</p><button class="btn" data-act="closecycle">ปิดงวดและเริ่มใหม่</button></div>';
+  }
+
+  /* --- runway --- */
+  var days=rangeDays(S.cycle.start,S.cycle.end), t=today();
+  var ws=weeks();
+  var cells=days.map(function(d){
+    var base=dayBaseline(d);
+    var sp=spentBetween(d,d,false);
+    var cls="rday", h=0;
+    if(d>t){cls+=" future";}
+    else{
+      h = base>0 ? Math.min(sp/base,1) : (sp>0?1:0);
+      if(base>0 && sp>base) cls+=" over";
+    }
+    if(d===t) cls+=" today";
+    for(var k=0;k<ws.length;k++){ if(k>0 && ws[k].start===d) cls+=" wkstart"; }
+    return '<div class="'+cls+'" style="--h:'+h.toFixed(3)+'"></div>';
+  }).join("");
+  var left=diffDays(t,S.cycle.payday);
+  var pdD=iso2d(S.cycle.payday);
+  html +=
+    '<div class="runway-wrap">'
+    + '<div class="runway-head"><div class="eyebrow">รางถึงวันเงินเดือน</div>'
+    + '<div class="eyebrow">'+(left>0? "อีก "+left+" วัน" : "วันนี้เงินเข้า")+'</div></div>'
+    + '<div class="runway"><div class="runway-days">'+cells+'</div>'
+    + '<div class="stamp'+(left<=0?' live':'')+'"><span class="d">'+pdD.getDate()+'</span><span class="m">'+TH_MON[pdD.getMonth()]+'</span><span class="l">เงินเดือน</span></div>'
+    + '</div>'
+    + '<div class="runway-axis"><span>'+thDate(S.cycle.start)+'</span><span>แท่ง = ใช้จริงเทียบงบวันนั้น</span></div>'
+    + '</div>';
+
+  /* --- today --- */
+  var tb=todayBudget();
+  if(tb){
+    var pct = tb.allow>0 ? Math.min(tb.spentToday/tb.allow,1)*100 : 100;
+    html += '<div class="today-line'+(tb.left<0?" neg":"")+'">'
+      + '<div class="eyebrow">'+thDow(t)+'ที่ '+thDate(t,false)+' · เหลือใช้วันนี้</div>'
+      + '<div class="big"><b>'+fmt(tb.left)+'</b><span>จากงบวันนี้ '+fmt(tb.allow)+' บาท</span></div>'
+      + '<div class="bar'+(tb.left<0?" over":"")+'"><span style="width:'+pct.toFixed(1)+'%"></span></div>'
+      + '<div class="sub">ใช้ไปวันนี้ '+fmt(tb.spentToday)+' · เหลือทั้งงวด '+fmt(cycleLeft())+' บาท</div>'
+      + '</div>';
+  }else{
+    html += '<div class="today-line"><div class="eyebrow">วันนี้อยู่นอกช่วงงวด</div><div class="sub">งวดปัจจุบัน '+thDate(S.cycle.start)+' – '+thDate(S.cycle.end,true)+'</div></div>';
+  }
+
+  html += '<div class="fab-row"><button class="btn" data-act="addexp">บันทึกรายจ่าย</button></div>';
+  html += '<div class="fab-row"><button class="btn ghost" data-act="addinc">บันทึกรายได้พิเศษ</button></div>';
+
+  /* --- week envelopes --- */
+  var wst=weekState();
+  html += '<div class="sec"><div class="sec-h"><div class="eyebrow">ซองรายสัปดาห์</div><div class="eyebrow">คงเหลือ</div></div>';
+  wst.forEach(function(w){
+    var total=w.alloc+w.carryIn+w.inj;
+    var pct= total>0 ? Math.max(0,Math.min(w.spent/total,1))*100 : 0;
+    var color=WK_COLORS[w.i%WK_COLORS.length];
+    html += '<div class="wk '+(w.isCur?"cur":"")+(w.isPast?" done":"")+'">'
+      + '<div class="tag" style="background:'+color+'">'+(w.i+1)+'</div>'
+      + '<div class="mid"><div class="t">'+thDate(w.start)+' – '+thDate(w.end)+'</div>'
+      + '<div class="d">งบ '+fmt(w.alloc)+(w.carryIn?(w.carryIn>0?" · ทบมา +"+fmt(w.carryIn):" · ติดลบมา "+fmt(w.carryIn)):"")+(w.inj?" · เติม +"+fmt(w.inj):"")+'</div>'
+      + '<div class="wkline"><span style="width:'+pct.toFixed(1)+'%;background:'+color+'"></span></div></div>'
+      + '<div class="amt"><b class="'+(w.bal<0?"neg":"")+'">'+fmt(w.bal)+'</b><small>ใช้ '+fmt(w.spent)+'</small></div>'
+      + '</div>';
+  });
+  html += '</div>';
+
+  /* --- sunday check-in --- */
+  var lastDone=null;
+  wst.forEach(function(w){ if(w.isPast) lastDone=w; });
+  if(lastDone && (!S.cycle.checked || S.cycle.checked.indexOf(lastDone.i)<0)){
+    html += '<div class="sec"><div class="notice"><b>สรุปสัปดาห์ที่ '+(lastDone.i+1)+'</b>'
+      + '<p>งบ '+fmt(lastDone.alloc+lastDone.carryIn+lastDone.inj)+' · ใช้จริง '+fmt(lastDone.spent)+' · '
+      + (lastDone.bal>=0? "เหลือ "+fmt(lastDone.bal)+" ทบไปสัปดาห์ถัดไป" : "เกินงบ "+fmt(-lastDone.bal)+" หักจากสัปดาห์ถัดไป")
+      + '</p><button class="btn" data-act="ack" data-i="'+lastDone.i+'">รับทราบ</button></div></div>';
+  }
+  b.innerHTML=html;
+}
+
+function renderLog(){
+  var b=el("logBody");
+  if(!S.cycle){ b.innerHTML='<div class="empty">ยังไม่มีงวด<br>ไปที่แท็บ “งวด” เพื่อเริ่ม</div>'; el("logTotal").textContent=""; return; }
+  var tx=S.cycle.txns.slice().sort(function(a,c){ return a.date<c.date?1:a.date>c.date?-1:(c.ts-a.ts); });
+  el("logTotal").textContent="รวม "+fmt(cycleSpent())+" บาท";
+  if(!tx.length){ b.innerHTML='<div class="empty">ยังไม่มีรายการ<br>กดปุ่มบันทึกรายจ่ายที่หน้าหลัก</div>'; return; }
+  var html="",cur=null;
+  tx.forEach(function(t){
+    if(t.date!==cur){
+      cur=t.date;
+      var dayTotal=spentBetween(cur,cur,true);
+      var base=dayBaseline(cur);
+      html+='<div class="dayhdr"><b>'+thDow(cur)+' '+thDate(cur,true)+'</b><small>'+fmt(dayTotal)+(base?" / "+fmt(base):"")+'</small></div>';
+    }
+    var c=CATS.filter(function(x){return x.id===t.cat;})[0]||CATS[5];
+    html+='<div class="row" data-id="'+t.id+'">'
+      + '<div class="ico">'+ico(c.icon)+'</div>'
+      + '<div class="tx"><b>'+(t.note? escapeHtml(t.note) : c.name)+'</b><small>'+c.name+(t.fun?" · จ่ายจากเงินใช้ส่วนตัว":"")+'</small></div>'
+      + '<div class="v">'+fmt(t.amount)+'</div>'
+      + '<button class="del" data-del="'+t.id+'">'+ico("i-x")+'</button>'
+      + '</div>';
+  });
+  b.innerHTML=html;
+}
+
+function renderPots(){
+  var p=S.pots;
+  var defs=[
+    {k:"reserve",n:"สำรองฉุกเฉิน",s:"ห้ามแตะจนกว่าจะฉุกเฉินจริง",i:"i-shield",acts:[["useres","ใช้ฉุกเฉิน"],["addres","เติมเงิน"]]},
+    {k:"buffer", n:"เงินกันชน",   s:"ดึงมาอุดสัปดาห์ที่งบบาน",  i:"i-buffer",acts:[["usebuf","ดึงเข้าสัปดาห์นี้"]]},
+    {k:"fun",    n:"ใช้ส่วนตัว",   s:"ใช้ได้เต็มที่ ไม่ต้องรู้สึกผิด",i:"i-fun",acts:[]},
+    {k:"savings",n:"เงินเก็บสะสม", s:"ยกไปทุกงวด ไม่รีเซ็ต",     i:"i-save",acts:[["addsav","เติมเงิน"],["usesav","ถอน"]]}
+  ];
+  var html='<div class="sec-h"><div class="eyebrow">กระเป๋าแยก</div><div class="eyebrow">'+fmt(p.reserve+p.buffer+p.fun+p.savings)+' บาท</div></div>';
+  defs.forEach(function(d){
+    html+='<div class="card"><div class="pot"><div class="ico">'+ico(d.i)+'</div>'
+      + '<div class="nm"><b>'+d.n+'</b><small>'+d.s+'</small></div>'
+      + '<div class="v">'+fmt(p[d.k])+'</div></div>';
+    if(d.acts.length){
+      html+='<div class="pot-actions">';
+      d.acts.forEach(function(a){ html+='<button class="btn ghost sm" data-act="'+a[0]+'">'+a[1]+'</button>'; });
+      html+='</div>';
+    }
+    html+='</div>';
+  });
+  html+='<div class="fab-row"><button class="btn" data-act="addinc">บันทึกรายได้พิเศษ</button></div>';
+  html+='<div class="hint">รายได้พิเศษถูกแบ่งอัตโนมัติ '+S.settings.split.savings+' / '+S.settings.split.buffer+' / '+S.settings.split.fun+' เข้าเงินเก็บ · กันชน · ใช้ส่วนตัว</div>';
+
+  var mv=S.moves.slice().reverse().slice(0,25);
+  if(mv.length){
+    html+='<div class="sec"><div class="sec-h"><div class="eyebrow">ความเคลื่อนไหวล่าสุด</div></div>';
+    mv.forEach(function(m){
+      html+='<div class="row'+(m.amount>0?" income":"")+'"><div class="tx"><b>'+escapeHtml(m.note||m.kind)+'</b><small>'+thDate(m.date,true)+' · '+m.kind+'</small></div>'
+        +'<div class="v">'+(m.amount>0?"+":"")+fmt(m.amount)+'</div></div>';
+    });
+    html+='</div>';
+  }
+  el("potsBody").innerHTML=html;
+}
+
+function renderCycle(){
+  var html="";
+  if(S.cycle){
+    var ws=weekState();
+    html+='<div class="card"><div class="eyebrow">งวดปัจจุบัน</div>'
+      + '<div style="margin-top:4px"><b class="dis" style="font-size:22px;font-weight:700">'+thDate(S.cycle.start)+' – '+thDate(S.cycle.end,true)+'</b></div>'
+      + '<div class="hint">ตั้งต้น '+fmt(S.cycle.amount)+' · กันสำรอง '+fmt(S.cycle.reserve)+' · ใช้ได้ '+fmt(spendable())+' บาท ('+rangeDays(S.cycle.start,S.cycle.end).length+' วัน)</div>'
+      + '<div class="hint">ใช้ไปแล้ว '+fmt(cycleSpent())+' · คงเหลือ '+fmt(cycleLeft())+' บาท</div></div>';
+    html+='<div class="fab-row"><button class="btn ghost" data-act="closecycle">ปิดงวดนี้และเริ่มใหม่</button></div>';
+  }else{
+    html+='<div class="fab-row"><button class="btn" data-act="newcycle">ตั้งงวดใหม่</button></div>';
+  }
+
+  html+='<div class="sec"><div class="sec-h"><div class="eyebrow">ตารางจ่ายเงินเดือน 2569</div></div><div class="card" style="padding:6px 8px">';
+  var t=today();
+  var nextIso=(nextPaydayFrom(t)||[])[0];
+  PAYDAYS.forEach(function(p,i){
+    var cls = p[0]===nextIso ? "next" : (diffDays(t,p[0])<0 ? "past":"");
+    var extra = p[0]===nextIso ? " · อีก "+diffDays(t,p[0])+" วัน" : "";
+    html+='<div class="pd '+cls+'"><div class="n">'+(i+1)+'</div><div class="m">'+p[1]+extra+'</div><div class="dt">'+thDate(p[0],true)+'</div></div>';
+  });
+  html+='</div></div>';
+
+  html+='<div class="sec"><div class="sec-h"><div class="eyebrow">ตั้งค่า</div></div><div class="card">'
+    + '<div class="switch"><div><b>ถ่วงน้ำหนักวันศุกร์–อาทิตย์</b><small>ให้งบวันหยุดมากกว่าวันธรรมดา 1.5 เท่า</small></div>'
+    + '<div class="tog '+(S.settings.weekendWeight?"on":"")+'" data-act="togweekend"></div></div>'
+    + '<div class="hint">สัดส่วนแบ่งรายได้พิเศษ (เงินเก็บ / กันชน / ใช้ส่วนตัว)</div>'
+    + '<div class="split" style="margin-top:8px">'
+    + '<div><b><input type="number" inputmode="numeric" id="spS" value="'+S.settings.split.savings+'" style="text-align:center;padding:6px;border:none;background:transparent;font-family:inherit;font-size:16px"></b><small>เงินเก็บ %</small></div>'
+    + '<div><b><input type="number" inputmode="numeric" id="spB" value="'+S.settings.split.buffer+'" style="text-align:center;padding:6px;border:none;background:transparent;font-family:inherit;font-size:16px"></b><small>กันชน %</small></div>'
+    + '<div><b><input type="number" inputmode="numeric" id="spF" value="'+S.settings.split.fun+'" style="text-align:center;padding:6px;border:none;background:transparent;font-family:inherit;font-size:16px"></b><small>ใช้ส่วนตัว %</small></div>'
+    + '</div><div class="fab-row"><button class="btn ghost sm" data-act="savesplit" style="width:100%">บันทึกสัดส่วน</button></div>'
+    + '</div></div>';
+
+  html+='<div class="sec"><div class="card">'
+    + '<div class="fab-row"><button class="btn ghost" data-act="backup">คัดลอกข้อมูลสำรอง</button></div>'
+    + '<div class="fab-row"><button class="btn ghost" data-act="restore">วางข้อมูลสำรองกลับ</button></div>'
+    + '<div class="fab-row"><button class="btn danger" data-act="wipe">ล้างข้อมูลทั้งหมด</button></div>'
+    + '<div class="hint">ปุ่มล้างข้อมูลต้องกดสองครั้งเพื่อยืนยัน</div>'
+    + '</div></div>';
+
+  el("cycleBody").innerHTML=html;
+}
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g,function(m){
+    return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m];
+  });
+}
+function renderAll(){
+  el("cycLabel").textContent = S.cycle ? ("งวด "+paydayLabel(S.cycle.payday)) : "ยังไม่ตั้งงวด";
+  renderHome();renderLog();renderPots();renderCycle();
+}
+
+/* ---------------- sheets ---------------- */
+var openSheet=null;
+function sheet(id){
+  closeSheet();
+  openSheet=el(id);
+  el("scrim").classList.add("on");
+  openSheet.classList.add("on");
+}
+function closeSheet(){
+  if(openSheet) openSheet.classList.remove("on");
+  el("scrim").classList.remove("on");
+  openSheet=null;
+}
+el("scrim").addEventListener("click",closeSheet);
+document.querySelectorAll("[data-close]").forEach(function(b){b.addEventListener("click",closeSheet);});
+
+/* expense sheet state */
+var expCat="food", expIsFun=false;
+function openExpense(){
+  if(!S.cycle){ sheetNewCycle(); return; }
+  expCat="food"; expIsFun=false;
+  el("expAmt").value=""; el("expNote").value=""; el("expDate").value=today();
+  var tb=todayBudget();
+  el("expSub").textContent = tb ? ("เหลือใช้วันนี้ "+fmt(tb.left)+" บาท") : "";
+  el("expChips").innerHTML=[20,50,100,200,500].map(function(v){
+    return '<button class="chip" data-amt="'+v+'">+'+v+'</button>';
+  }).join("");
+  el("expCats").innerHTML=CATS.map(function(c){
+    return '<button class="cat'+(c.id===expCat?" on":"")+'" data-cat="'+c.id+'">'+ico(c.icon)+'<span>'+c.name+'</span></button>';
+  }).join("");
+  el("expFunWrap").classList.toggle("hide", S.pots.fun<=0);
+  el("expFunBal").textContent="คงเหลือในกระเป๋า "+fmt(S.pots.fun)+" บาท";
+  el("expFun").classList.remove("on");
+  sheet("sh-exp");
+  setTimeout(function(){el("expAmt").focus();},260);
+}
+el("expChips").addEventListener("click",function(e){
+  var b=e.target.closest("[data-amt]"); if(!b) return;
+  var cur=parseFloat(el("expAmt").value)||0;
+  el("expAmt").value=cur+parseInt(b.dataset.amt,10);
+});
+el("expCats").addEventListener("click",function(e){
+  var b=e.target.closest("[data-cat]"); if(!b) return;
+  expCat=b.dataset.cat;
+  el("expCats").querySelectorAll(".cat").forEach(function(x){x.classList.toggle("on",x.dataset.cat===expCat);});
+});
+el("expFun").addEventListener("click",function(){
+  expIsFun=!expIsFun; el("expFun").classList.toggle("on",expIsFun);
+});
+el("expSave").addEventListener("click",function(){
+  var v=parseFloat(el("expAmt").value);
+  if(!v||v<=0){ el("expAmt").focus(); return; }
+  if(expIsFun && v>S.pots.fun){ el("expSub").textContent="เงินใช้ส่วนตัวไม่พอ (มี "+fmt(S.pots.fun)+")"; return; }
+  S.cycle.txns.push({id:uid(),ts:Date.now(),date:el("expDate").value||today(),amount:v,cat:expCat,note:el("expNote").value.trim(),fun:expIsFun});
+  if(expIsFun){ S.pots.fun-=v; S.moves.push({date:today(),kind:"ใช้ส่วนตัว",amount:-v,note:el("expNote").value.trim()||"จ่ายจากเงินใช้ส่วนตัว"}); }
+  save();renderAll();closeSheet();
+});
+
+/* income sheet */
+function openIncome(){
+  el("incAmt").value=""; el("incNote").value=""; el("incDate").value=today();
+  drawSplit(0); sheet("sh-inc");
+  setTimeout(function(){el("incAmt").focus();},260);
+}
+function splitOf(v){
+  var s=S.settings.split, tot=s.savings+s.buffer+s.fun||100;
+  var a=Math.round(v*s.savings/tot), b=Math.round(v*s.buffer/tot);
+  return {savings:a,buffer:b,fun:Math.round(v)-a-b};
+}
+function drawSplit(v){
+  var s=splitOf(v||0);
+  el("incSplit").innerHTML =
+    '<div><b>'+fmt(s.savings)+'</b><small>เงินเก็บ</small></div>'
+   +'<div><b>'+fmt(s.buffer)+'</b><small>กันชน</small></div>'
+   +'<div><b>'+fmt(s.fun)+'</b><small>ใช้ส่วนตัว</small></div>';
+}
+el("incAmt").addEventListener("input",function(){drawSplit(parseFloat(el("incAmt").value)||0);});
+el("incSave").addEventListener("click",function(){
+  var v=parseFloat(el("incAmt").value);
+  if(!v||v<=0){el("incAmt").focus();return;}
+  var s=splitOf(v);
+  S.pots.savings+=s.savings; S.pots.buffer+=s.buffer; S.pots.fun+=s.fun;
+  S.moves.push({date:el("incDate").value||today(),kind:"รายได้พิเศษ",amount:v,note:el("incNote").value.trim()||"รายได้พิเศษ"});
+  save();renderAll();closeSheet();
+});
+
+/* generic pot sheet */
+var potMode=null;
+function openPot(mode){
+  potMode=mode;
+  var cfg={
+    useres:{t:"ใช้เงินสำรองฉุกเฉิน",s:"มี "+fmt(S.pots.reserve)+" บาท",ph:"เกิดอะไรขึ้น",btn:"ยืนยันการใช้"},
+    addres:{t:"เติมสำรองฉุกเฉิน",s:"ดึงจากเงินเก็บสะสม (มี "+fmt(S.pots.savings)+")",ph:"หมายเหตุ",btn:"เติมเงิน"},
+    usebuf:{t:"ดึงเงินกันชนเข้าสัปดาห์นี้",s:"มี "+fmt(S.pots.buffer)+" บาท",ph:"เพราะอะไร",btn:"ดึงเข้าซองสัปดาห์"},
+    addsav:{t:"เติมเงินเก็บ",s:"จากเงินสดนอกระบบ",ph:"หมายเหตุ",btn:"เติมเงินเก็บ"},
+    usesav:{t:"ถอนเงินเก็บ",s:"มี "+fmt(S.pots.savings)+" บาท",ph:"เอาไปทำอะไร",btn:"ยืนยันการถอน"}
+  }[mode];
+  el("potTitle").textContent=cfg.t; el("potSub").textContent=cfg.s;
+  el("potNote").placeholder=cfg.ph; el("potSave").textContent=cfg.btn;
+  el("potAmt").value=""; el("potNote").value="";
+  sheet("sh-pot");
+  setTimeout(function(){el("potAmt").focus();},260);
+}
+el("potSave").addEventListener("click",function(){
+  var v=parseFloat(el("potAmt").value); if(!v||v<=0){el("potAmt").focus();return;}
+  var note=el("potNote").value.trim();
+  var p=S.pots;
+  if(potMode==="useres"){
+    if(v>p.reserve){el("potSub").textContent="เงินสำรองมีไม่พอ";return;}
+    p.reserve-=v; S.moves.push({date:today(),kind:"ใช้สำรองฉุกเฉิน",amount:-v,note:note||"ฉุกเฉิน"});
+  }else if(potMode==="addres"){
+    if(v>p.savings){el("potSub").textContent="เงินเก็บมีไม่พอ";return;}
+    p.savings-=v; p.reserve+=v; S.moves.push({date:today(),kind:"ย้ายเข้าสำรอง",amount:v,note:note||"เติมสำรอง"});
+  }else if(potMode==="usebuf"){
+    if(v>p.buffer){el("potSub").textContent="เงินกันชนมีไม่พอ";return;}
+    if(!S.cycle){el("potSub").textContent="ยังไม่ได้ตั้งงวด";return;}
+    p.buffer-=v;
+    if(!S.cycle.injections) S.cycle.injections=[];
+    S.cycle.injections.push({date:today(),amount:v,note:note});
+    S.moves.push({date:today(),kind:"ดึงกันชนเข้าซอง",amount:-v,note:note||"อุดสัปดาห์นี้"});
+  }else if(potMode==="addsav"){
+    p.savings+=v; S.moves.push({date:today(),kind:"เติมเงินเก็บ",amount:v,note:note||"เติมเงินเก็บ"});
+  }else if(potMode==="usesav"){
+    if(v>p.savings){el("potSub").textContent="เงินเก็บมีไม่พอ";return;}
+    p.savings-=v; S.moves.push({date:today(),kind:"ถอนเงินเก็บ",amount:-v,note:note||"ถอน"});
+  }
+  save();renderAll();closeSheet();
+});
+
+/* new cycle */
+function sheetNewCycle(){
+  var np=nextPaydayFrom(today());
+  el("cycSub").textContent = np ? ("เงินเดือนงวดถัดไปเข้า "+thDow(np[0])+" "+thDate(np[0],true)) : "ไม่มีวันจ่ายในตารางแล้ว";
+  el("ncAmt").value=""; el("ncRes").value = S.pots.reserve>0 ? "0" : "";
+  el("ncStart").value=today();
+  updNcHint();
+  sheet("sh-cyc");
+  setTimeout(function(){el("ncAmt").focus();},260);
+}
+function updNcHint(){
+  var st=el("ncStart").value||today();
+  var np=nextPaydayFrom(st); if(!np){el("ncHint").textContent="";return;}
+  var end=addDays(np[0],-1);
+  var n=rangeDays(st,end).length;
+  var amt=parseFloat(el("ncAmt").value)||0, res=parseFloat(el("ncRes").value)||0;
+  var sp=Math.max(0,amt-res);
+  el("ncHint").textContent = n+" วัน ถึง "+thDate(end,true)+(sp? " · ใช้ได้วันละประมาณ "+fmt(sp/n)+" บาท":"");
+}
+["ncAmt","ncRes","ncStart"].forEach(function(id){el(id).addEventListener("input",updNcHint);});
+el("ncSave").addEventListener("click",function(){
+  var st=el("ncStart").value||today();
+  var np=nextPaydayFrom(st); if(!np) return;
+  var amt=parseFloat(el("ncAmt").value)||0, res=parseFloat(el("ncRes").value)||0;
+  if(amt<=0){el("ncAmt").focus();return;}
+  if(res>amt) res=0;
+  S.pots.reserve+=res;
+  if(res>0) S.moves.push({date:st,kind:"กันสำรองฉุกเฉิน",amount:res,note:"ต้นงวด"});
+  S.cycle={start:st,end:addDays(np[0],-1),payday:np[0],amount:amt,reserve:res,txns:[],injections:[],checked:[]};
+  save();renderAll();closeSheet();go("home");
+});
+
+/* close cycle */
+function closeCycle(){
+  if(!S.cycle) return;
+  var left=cycleLeft();
+  if(left>0){ S.pots.savings+=left; S.moves.push({date:today(),kind:"ยอดเหลือปลายงวด",amount:left,note:"โยนเข้าเงินเก็บ"}); }
+  S.cycle=null; save(); renderAll(); sheetNewCycle();
+}
+
+/* ---------------- interactions ---------------- */
+function uid(){return Math.random().toString(36).slice(2,9);}
+var armed={};
+function arm(key,btn,fn){
+  if(armed[key]){ clearTimeout(armed[key].t); delete armed[key]; btn.classList.remove("armed"); fn(); return; }
+  btn.classList.add("armed");
+  armed[key]={t:setTimeout(function(){ btn.classList.remove("armed"); delete armed[key]; },2600)};
+}
+
+document.addEventListener("click",function(e){
+  var t=e.target.closest("[data-act]");
+  if(t){
+    var a=t.dataset.act;
+    if(a==="addexp") openExpense();
+    else if(a==="addinc") openIncome();
+    else if(a==="newcycle") sheetNewCycle();
+    else if(a==="closecycle") arm("cc",t,closeCycle);
+    else if(a==="ack"){ if(!S.cycle.checked)S.cycle.checked=[]; S.cycle.checked.push(+t.dataset.i); save(); renderHome(); }
+    else if(a==="useres"||a==="addres"||a==="usebuf"||a==="addsav"||a==="usesav") openPot(a);
+    else if(a==="togweekend"){ S.settings.weekendWeight=!S.settings.weekendWeight; save(); renderAll(); }
+    else if(a==="savesplit"){
+      var s=Math.max(0,parseInt(el("spS").value,10)||0), b=Math.max(0,parseInt(el("spB").value,10)||0), f=Math.max(0,parseInt(el("spF").value,10)||0);
+      if(s+b+f>0){ S.settings.split={savings:s,buffer:b,fun:f}; save(); renderAll(); }
+    }
+    else if(a==="backup"){
+      var txt=JSON.stringify(S);
+      if(navigator.clipboard) navigator.clipboard.writeText(txt);
+      t.textContent="คัดลอกแล้ว"; setTimeout(function(){t.textContent="คัดลอกข้อมูลสำรอง";},1800);
+    }
+    else if(a==="restore"){
+      if(navigator.clipboard&&navigator.clipboard.readText){
+        navigator.clipboard.readText().then(function(txt){
+          try{ var o=JSON.parse(txt); if(o&&o.pots){ S=o; save(); renderAll(); t.textContent="กู้คืนแล้ว"; } else t.textContent="ข้อมูลไม่ถูกต้อง"; }
+          catch(err){ t.textContent="ข้อมูลไม่ถูกต้อง"; }
+          setTimeout(function(){t.textContent="วางข้อมูลสำรองกลับ";},1800);
+        });
+      }
+    }
+    else if(a==="wipe"){
+      arm("wipe",t,function(){
+        S={cycle:null,pots:{reserve:0,buffer:0,fun:0,savings:0},moves:[],settings:{weekendWeight:true,split:{savings:50,buffer:30,fun:20}}};
+        save();renderAll();
+      });
+    }
+    return;
+  }
+  var d=e.target.closest("[data-del]");
+  if(d){
+    var id=d.dataset.del;
+    arm("del"+id,d,function(){
+      var tx=S.cycle.txns.filter(function(x){return x.id===id;})[0];
+      if(tx&&tx.fun) S.pots.fun+=tx.amount;
+      S.cycle.txns=S.cycle.txns.filter(function(x){return x.id!==id;});
+      save();renderAll();
+    });
+    return;
+  }
+  var tab=e.target.closest("[data-tab]");
+  if(tab) go(tab.dataset.tab);
+});
+
+function go(name){
+  ["home","log","pots","cycle"].forEach(function(n){
+    el("v-"+n).classList.toggle("on",n===name);
+  });
+  document.querySelectorAll(".tabbar button").forEach(function(b){
+    b.classList.toggle("on",b.dataset.tab===name);
+  });
+  window.scrollTo(0,0);
+}
+
+/* apple touch icon */
+(function(){
+  try{
+    var c=document.createElement("canvas");c.width=c.height=180;var x=c.getContext("2d");
+    x.fillStyle="#E7EBE4";x.fillRect(0,0,180,180);
+    x.strokeStyle="#A6322B";x.lineWidth=6;x.beginPath();x.arc(90,90,58,0,Math.PI*2);x.stroke();
+    x.lineWidth=2.5;x.beginPath();x.arc(90,90,49,0,Math.PI*2);x.stroke();
+    x.fillStyle="#16241F";x.font="700 62px 'Bai Jamjuree',sans-serif";x.textAlign="center";x.textBaseline="middle";
+    x.fillText("฿",90,94);
+    var l=document.createElement("link");l.rel="apple-touch-icon";l.href=c.toDataURL("image/png");
+    document.head.appendChild(l);
+  }catch(e){}
+})();
+
+renderAll();
+if(!S.cycle) go("home");
+})();
+</script>
+</body>
+</html>
